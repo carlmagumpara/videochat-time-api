@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VIDEO CHAT TIME API</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+	  <div class="container">
+		  <div class="row">
+		  	<div class="col-md-6 col-md-offset-3">
+	  			<h1 class="center">VIDEO CHAT TIME API</h1>
+			  	<form id="time-form">
+			  		<div class="form-group">
+			  			<label>Client Credits Input:</label>
+			  			<input type="number" name="" placeholder="Add credits" class="form-control" id="available-credits">
+			  		</div>
+				  	<div class="center">
+				  		<h3>TIME: <span id="time">00:00</span></h3>
+				  		<div class="form-group">
+					  		<input type="submit" class="btn btn-primary center start-call" value="Start Call" disabled>
+					  		<button type="button" class="btn btn-danger center stop-call" disabled>Stop Call</button>
+				  		</div>
+				  	</div>
+				  	<div class="result hide">
+				  		<h3>TOTAL:</h3>
+				  		<table class="table">
+				  			<tr>
+				  				<td>
+				  					CLIENT DEBITED:
+				  				</td>
+				  				<td>
+				  					<span id="credits">0</span>
+				  				</td>
+				  			</tr>
+				  			<tr>
+				  				<td>
+				  					CLIENT TOTAL CREDITS AFTER CALL:
+				  				</td>
+				  				<td>
+				  					<span id="total">0</span>
+				  				</td>
+				  			</tr>
+				  		</table>
+				  	</div>
+			  	</form>
+		  	</div>
+		  </div>
+	  </div>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    	$(document).ready(function(){
+
+    		var duration, display, interval, diff, credits;
+
+    		$('#available-credits').on('keyup',function() {
+    			var value = $(this).val();
+    			if (value != '') {
+    				$('.start-call').removeAttr('disabled');
+    			} else {
+    				$('.start-call').attr('disabled','true');
+    			}
+    		});
+
+    		$('#time-form').submit(function(e){
+    			e.preventDefault();
+    			credits = parseInt($('#available-credits').val());
+				var time = credits / 0.60;
+		        startTimer(time);
+		        showTimer(time);
+    			$('.start-call').attr('disabled','true');
+    			$('.stop-call').removeAttr('disabled');
+    			$('#available-credits').attr('disabled','true');
+    		});
+
+    		$('.stop-call').click(function(){
+    			getTotal();
+    			stopTimer();
+    			$(this).attr('disabled','true');
+    			$('.result').removeClass('hide').slideDown();
+    		});
+
+			function showTimer(time_format){
+			    $('#time').text(time_format);
+			}
+
+			function startTimer(time_left) {
+			    duration = time_left;
+			    var start = Date.now(), minutes, seconds;
+			    function timer() {
+			        diff = duration - (((Date.now() - start) / 1000) | 0);
+			        minutes = (diff / 60) | 0;
+			        seconds = (diff % 60) | 0;
+			        minutes = minutes < 10 ? "0" + minutes : minutes;
+			        seconds = seconds < 10 ? "0" + seconds : seconds;
+			        $('#time').text(minutes + ":" + seconds); 
+			        if (diff == 180) {
+			        } else if(diff == 0){
+			            stopTimer();
+			        }
+			    };
+			    timer();
+			    interval = setInterval(timer, 1000);
+			}
+
+			function stopTimer(){
+			    clearInterval(interval);
+			}
+
+			function getDuration(){
+			    return duration - diff;
+			}
+
+			function getTotal(){
+				$('#credits').text(getDuration());
+				$('#total').text(credits - getDuration());
+			}
+
+    	});
+    </script>
+  </body>
+</html>
